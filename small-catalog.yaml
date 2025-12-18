@@ -5,7 +5,7 @@ metadata:
 defaults:
   source:
     git: "github.com/portainer/industrial-app-portal-catalog"
-    ref: "master"
+    ref: "main"
 
 apps:
   nginx:
