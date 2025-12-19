@@ -38,8 +38,9 @@ apps:
       publisher: "OpenJS Foundation"
 
       # Available application versions that can be deployed
-      # The ((PIAP_IMAGE_VERSION)) placeholder in deployment files will be automatically
-      # replaced with the user-selected version from this list
+      # Users select from this list during deployment; the selected version is used
+      # to replace ((PIAP_IMAGE_VERSION)) placeholders in Compose files
+      # (See "PLACEHOLDER INTERPOLATION SYSTEM" in configuration.variables for details)
       versions: ["3.1.14", "3.1.15", "4.0.9"]
 
       # Application category for organizing the catalog (e.g., "databases", "monitoring", "industrial-automation")
@@ -84,10 +85,14 @@ apps:
           # Inherits git/ref from defaults.source (github.com/your-org/edge-templates@main)
           #
           # HOW CONFIGURATION INJECTION WORKS:
-          # - The docker-compose.yml file remains unchanged (source of truth in git)
+          # - The docker-compose.yml source file in git remains unchanged
+          # - At deployment time, PIAP processes a copy and interpolates any ((PIAP_*)) placeholders
+          #   (See "PLACEHOLDER INTERPOLATION SYSTEM" in configuration.variables for details)
           # - PIAP generates a docker-compose.override.yml file on each edge device
           # - Docker Compose automatically merges both files when running `docker compose up`
-          # - Override file contains bind mounts from configuration.files and env vars from configuration.variables
+          # - Override file contains bind mounts from configuration.files
+          # - Environment variables are added to the override file only for variables that were
+          #   NOT interpolated into config template files (see PLACEHOLDER INTERPOLATION SYSTEM)
           # - See apps/node-red/docker-compose.override.yml for an example of what PIAP generates
           compose:
             # Path to the docker-compose.yml file relative to the source repository root
@@ -95,12 +100,14 @@ apps:
 
           # Kubernetes deployment option (for environments supporting Kubernetes)
           # Inherits git/ref from defaults.source (github.com/your-org/edge-templates@main)
+          # NOTE: ((PIAP_*)) placeholder interpolation for Kubernetes manifests is planned for a future release
           kubernetes:
             # Path to Kubernetes manifest file relative to the source repository root
             path: "apps/node-red/kubernetes.yaml"
 
           # Helm chart deployment option (for Helm-enabled Kubernetes clusters)
           # This example shows external repository usage for Helm charts
+          # NOTE: ((PIAP_*)) placeholder interpolation for Helm charts is planned for a future release
           helm:
             # External git repository containing the Helm chart (overrides defaults.source)
             git: "github.com/your-org/helm-charts"
@@ -130,10 +137,9 @@ apps:
         #    - Templates can contain ((PIAP_*)) placeholders that are replaced with variable values
         #
         # 3. Variables: User-provided values collected during app installation
-        #    - Used to replace ((PIAP_VARIABLE_NAME)) placeholders in template files
-        #    - If placeholder exists in template → replaced with the value
-        #    - If placeholder NOT found → injected as environment variable VARIABLE_NAME
+        #    - Used to replace ((PIAP_*)) placeholders in Compose files and template files
         #    - Can be used standalone (without files) for environment-only configuration
+        #    - See "PLACEHOLDER INTERPOLATION SYSTEM" in the variables section for detailed behavior
         configuration:
           # Configuration files to be mounted into the container
           # This is a list of file mount points, each with its own template options
@@ -262,17 +268,68 @@ apps:
               container_path: "/root/.ssh/id_rsa"
               # File must be placed on device by operator or another process
 
-          # Variables for dynamic configuration replacement and environment injection
+          # ============================================================================
+          # PLACEHOLDER INTERPOLATION SYSTEM
+          # ============================================================================
           #
-          # USAGE MODES:
-          # 1. With "files" section: Replace ((PIAP_VARIABLE_NAME)) placeholders in template files
-          # 2. Standalone (without "files"): Inject as environment variables only
+          # PIAP uses ((PIAP_*)) placeholders to inject dynamic values at deployment time.
+          # Placeholders are processed in multiple contexts with specific behaviors.
           #
-          # PROCESSING LOGIC:
-          # - If placeholder ((PIAP_VARIABLE_NAME)) exists in template file → replaced with value
-          # - If placeholder NOT found in template → injected as environment variable VARIABLE_NAME
-          # - Variable names should use UPPER_SNAKE_CASE convention
-          # - Placeholders in template files use format: ((PIAP_VARIABLE_NAME))
+          # ----------------------------------------------------------------------------
+          # 1. COMPOSE FILE INTERPOLATION
+          # ----------------------------------------------------------------------------
+          # Any ((PIAP_*)) placeholder in docker-compose.yml files is interpolated
+          # at deployment time, BEFORE the container is started.
+          #
+          # SPECIAL PLACEHOLDER - ((PIAP_IMAGE_VERSION)):
+          #   - Automatically available without defining a variable
+          #   - Replaced with the user-selected version from metadata.versions
+          #   - Commonly used in image tags: image: nodered/node-red:((PIAP_IMAGE_VERSION))
+          #
+          # USER-DEFINED PLACEHOLDERS in Compose files:
+          #   - Any ((PIAP_VARIABLE_NAME)) placeholder in the Compose file is interpolated
+          #   - The value comes from the matching variable in configuration.variables
+          #   - Example: environment: - API_URL=((PIAP_API_URL))
+          #
+          # ----------------------------------------------------------------------------
+          # 2. CONFIGURATION TEMPLATE INTERPOLATION
+          # ----------------------------------------------------------------------------
+          # When configuration.files are defined with templates:
+          #   - Template files can contain ((PIAP_VARIABLE_NAME)) placeholders
+          #   - These are replaced with values from configuration.variables
+          #   - The interpolated file is then written to device_path on the edge device
+          #
+          # ----------------------------------------------------------------------------
+          # 3. ENVIRONMENT VARIABLE INJECTION
+          # ----------------------------------------------------------------------------
+          # Environment variables are created based on the following logic:
+          #
+          # SCENARIO A - No configuration templates defined:
+          #   - All variables are injected as environment variables
+          #   - Variable "MQTT_BROKER" becomes env var MQTT_BROKER in the container
+          #   - This is the PRIMARY use case for env-only configuration
+          #
+          # SCENARIO B - Configuration templates ARE defined:
+          #   - If ((PIAP_VARIABLE_NAME)) placeholder IS FOUND in a template file:
+          #     → Value is interpolated into the file
+          #     → Environment variable is NOT created (no duplication)
+          #   - If ((PIAP_VARIABLE_NAME)) placeholder is NOT FOUND in any template:
+          #     → Environment variable IS created as a FALLBACK
+          #     → This allows mixed config: some values in files, others as env vars
+          #
+          # SUMMARY - Environment variables act as:
+          #   - PRIMARY source when no config templates use the variable
+          #   - FALLBACK when templates exist but don't contain the placeholder
+          #   - SKIPPED when the value was already interpolated into a config file
+          #
+          # ----------------------------------------------------------------------------
+          # VARIABLE NAMING CONVENTIONS
+          # ----------------------------------------------------------------------------
+          # - Variable names should use UPPER_SNAKE_CASE (e.g., MQTT_BROKER, API_KEY)
+          # - Placeholders use format: ((PIAP_VARIABLE_NAME))
+          # - Environment variables use the name directly: VARIABLE_NAME
+          #
+          # ============================================================================
           variables:
             - # REQUIRED: Variable identifier
               # Used in placeholders as ((PIAP_MQTT_BROKER)) and as env var MQTT_BROKER
@@ -352,8 +409,14 @@ apps:
             path: "apps/node-red/docker-compose.yml"
 
         # Configuration with only variables (no files section)
-        # Variables will be injected as environment variables into the container
         # USE CASE: Applications that are configured entirely via environment variables
+        #
+        # IMPORTANT: Variables are injected as environment variables ONLY if they are not
+        # interpolated elsewhere. If the Compose file (docker-compose.yml) contains
+        # ((PIAP_VARIABLE_NAME)) placeholders for these variables, they will be interpolated
+        # there instead, and no environment variable will be created.
+        # To guarantee env var injection, ensure no ((PIAP_*)) placeholders exist for these
+        # variables in either the Compose file or any configuration template files.
         configuration:
           variables:
             - name: "NODE_ENV"
