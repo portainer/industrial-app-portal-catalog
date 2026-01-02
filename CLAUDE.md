@@ -79,7 +79,8 @@ Example in config template (apps/node-red/prod/mqtt.json):
 Deployment files can be sourced from git repositories:
 - Global default defined in `defaults.source` (git + ref)
 - Inherited by all deployments unless overridden
-- Can be overridden at deployment level (compose/kubernetes)
+- Can be overridden at deployment level
+- Currently only Compose deployments inherit these defaults (Kubernetes not yet implemented)
 - Example: `defaults.source.git: "github.com/your-org/edge-templates"`
 
 ### Configuration System
@@ -245,30 +246,22 @@ When modifying YAML files, ensure:
 5. Ensure matching variables are defined in `configuration.variables`
 6. (Optional) Update `default` property if this should be the default template
 
-## Docker Compose Override File Pattern
+## Compose Deployment and Edge Stack Integration
 
-PIAP uses the standard Docker Compose override file pattern to inject runtime configuration without modifying the source `docker-compose.yml` files.
+PIAP processes Docker Compose files and deploys them as Portainer Edge Stacks.
 
 **How it works:**
-1. Original `docker-compose.yml` remains unchanged in git (source of truth)
-2. PIAP generates `docker-compose.override.yml` on each edge device
-3. Docker Compose automatically merges both files at runtime
-4. Override file contains device-specific bind mounts and environment variables
+1. PIAP fetches the `docker-compose.yml` from git at deployment time
+2. Any `((PIAP_*))` placeholders are interpolated directly into the compose content
+3. Volume mounts for `configuration.files` are injected into the compose file
+4. The modified compose is sent to Portainer as an Edge Stack
+5. Environment variables are passed to the Edge Stack for variables NOT used as placeholders
+6. Config files are delivered via Portainer Edge Config (folder-per-device structure)
 
-**What PIAP injects into override files:**
-- Volume bind mounts from `configuration.files` entries
-- Environment variables from `configuration.variables` entries
-- Device-specific runtime configuration
+**Edge Config Delivery:**
+Configuration files are delivered to devices via Portainer Edge Config using a folder-per-device structure. Each device receives its own interpolated config files based on its resolved variable values. This allows devices to share an Edge Stack even when they have different configuration values.
 
-**Example:** See `apps/node-red/docker-compose.override.yml` for a comprehensive example showing what PIAP generates based on catalog configuration.
-
-**Benefits:**
-- Source files remain clean and unchanged
-- Standard Docker Compose pattern (well-documented)
-- Easy debugging: inspect override file to see what PIAP added
-- Clear separation: base config in git, runtime config in override
-
-**Note:** This pattern is currently used for Docker Compose deployments. Kubernetes will use platform-native patterns (ConfigMaps, Secrets) when support is added.
+**Note:** Kubernetes support is planned for a future release and will use platform-native patterns (ConfigMaps, Secrets).
 
 ## Testing Changes
 

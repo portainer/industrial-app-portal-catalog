@@ -10,7 +10,8 @@ metadata:
   updated: "2025-07-18T10:30:00Z"
 
 # Default configuration inherited by all applications
-# These defaults can be overridden at the deployment level (compose/kubernetes)
+# These defaults can be overridden at the deployment level
+# NOTE: Currently only Compose deployments inherit these defaults (Kubernetes not yet implemented)
 defaults:
   # Default source repository for deployment files and configurations
   # When deployments don't specify their own git repository, they inherit these values
@@ -85,22 +86,20 @@ apps:
           # Inherits git/ref from defaults.source (github.com/your-org/edge-templates@main)
           #
           # HOW CONFIGURATION INJECTION WORKS:
-          # - The docker-compose.yml source file in git remains unchanged
-          # - At deployment time, PIAP processes a copy and interpolates any ((PIAP_*)) placeholders
+          # - PIAP fetches the docker-compose.yml from git at deployment time
+          # - Any ((PIAP_*)) placeholders are interpolated directly into the compose content
           #   (See "PLACEHOLDER INTERPOLATION SYSTEM" in configuration.variables for details)
-          # - PIAP generates a docker-compose.override.yml file on each edge device
-          # - Docker Compose automatically merges both files when running `docker compose up`
-          # - Override file contains bind mounts from configuration.files
-          # - Environment variables are added to the override file only for variables that were
-          #   NOT interpolated into config template files (see PLACEHOLDER INTERPOLATION SYSTEM)
-          # - See apps/node-red/docker-compose.override.yml for an example of what PIAP generates
+          # - Volume mounts for configuration.files are injected into the compose file
+          # - The modified compose is sent to Portainer as an Edge Stack
+          # - Environment variables are passed to the Edge Stack for variables NOT used as placeholders
+          # - Config files are delivered via Portainer Edge Config (folder-per-device structure)
           compose:
             # Path to the docker-compose.yml file relative to the source repository root
             path: "apps/node-red/docker-compose.yml"
 
-          # Kubernetes deployment option (for environments supporting Kubernetes)
-          # Inherits git/ref from defaults.source (github.com/your-org/edge-templates@main)
-          # NOTE: ((PIAP_*)) placeholder interpolation for Kubernetes manifests is planned for a future release
+          # Kubernetes deployment option
+          # NOTE: NOT YET IMPLEMENTED - Kubernetes support is planned for a future release
+          # When implemented, will inherit git/ref from defaults.source
           kubernetes:
             # Path to Kubernetes manifest file relative to the source repository root
             path: "apps/node-red/kubernetes.yaml"
@@ -110,6 +109,12 @@ apps:
         # OPTIONAL: This entire section can be omitted for simple applications that don't need
         # any custom configuration. When omitted, the PIAP UI will skip the configuration wizard
         # step entirely and proceed directly to deployment.
+        #
+        # EDGE CONFIG DELIVERY:
+        # Configuration files are delivered to devices via Portainer Edge Config using a
+        # folder-per-device structure. Each device receives its own interpolated config files
+        # based on its resolved variable values. This allows devices to share an Edge Stack
+        # even when they have different configuration values.
         #
         # KEY CONCEPTS:
         # 1. Configuration Files (files): Define bind mount mappings for configuration files

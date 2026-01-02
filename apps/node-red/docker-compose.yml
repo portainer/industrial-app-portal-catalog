@@ -11,8 +11,7 @@ services:
     environment:
       - TZ=UTC
     # Named volume for persistent Node-RED data
-    # Configuration file bind mounts are added via docker-compose.override.yml
-    # See: apps/node-red/docker-compose.override.yml for example of PIAP-generated overrides
+    # Configuration file bind mounts are injected by PIAP before Edge Stack deployment
     volumes:
       - nodered_data:/data
 
