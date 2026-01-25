@@ -1,0 +1,16 @@
+services:
+  edgeconnector-aggregator:
+    image: softingindustrial/edgeaggregator:((PIAP_IMAGE_VERSION))
+    ports:
+      - "443:443"
+      - "8099:8099"
+      - "4897:4897"
+    environment:
+      - TZ=((PIAP_TZ))
+    volumes:
+      - edgeconnector-aggregator-config-data:/config
+      - edgeconnector-aggregator-mqtt-data:/mqtt
+
+volumes:
+  edgeconnector-aggregator-config-data:
+  edgeconnector-aggregator-mqtt-data:

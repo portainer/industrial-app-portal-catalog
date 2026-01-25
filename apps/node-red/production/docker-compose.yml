@@ -1,0 +1,12 @@
+services:
+  node-red:
+    image: nodered/node-red:((PIAP_IMAGE_VERSION))
+    ports:
+      - "1880:1880"
+    environment:
+      - TZ=((PIAP_TZ))
+    volumes:
+      - node-red-data:/data
+
+volumes:
+  node-red-data:

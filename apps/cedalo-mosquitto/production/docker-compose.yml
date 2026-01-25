@@ -1,0 +1,17 @@
+services:
+  mosquitto:
+    image: registry.cedalo.com/portainer-trials/mosquitto:((PIAP_IMAGE_VERSION))
+    ports:
+      - "1883:1883"
+      - "8883:8883"
+      - "8090:8090"
+    environment:
+      CEDALO_LICENSE_KEY: ((PIAP_LICENSE_KEY))
+      MOSQUITTO_DYNSEC_PASSWORD: ((PIAP_MOSQUITTO_PASSWORD))
+    volumes:
+       - mosquitto_data:/mosquitto/data
+       - mosquitto_config:/mosquitto/config
+
+volumes:
+    mosquitto_data:
+    mosquitto_config:

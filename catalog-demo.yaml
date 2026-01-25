@@ -25,7 +25,7 @@ apps:
       - label: "Production"
         deployment:
           compose:
-            path: "apps/nginx/docker-compose.yml"
+            path: "demo/nginx/docker-compose.yml"
         configuration:
           variables:
             - name: "NGINX_PORT"
@@ -53,9 +53,9 @@ apps:
         version_requirement: ">=3.1.15"
         deployment:
           compose:
-            path: "apps/node-red/docker-compose.yml"
+            path: "demo/node-red/docker-compose.yml"
           kubernetes:
-            path: "apps/node-red/kubernetes.yaml"
+            path: "demo/node-red/kubernetes.yaml"
         configuration:
           files:
             - label: "Application Configuration"
@@ -65,15 +65,15 @@ apps:
                 production:
                   name: "Production Configuration"
                   description: "Production-ready Node-RED configuration with security and performance optimizations. Recommended for production deployments."
-                  path: "apps/node-red/prod/config.json"
+                  path: "demo/node-red/prod/config.json"
                 development:
                   name: "Development Configuration"
                   description: "Development configuration with debug logging enabled and relaxed security. Use for testing and development only."
-                  path: "apps/node-red/dev/config.json"
+                  path: "demo/node-red/dev/config.json"
                 minimal:
                   name: "Minimal Configuration"
                   description: "Minimal configuration with only essential settings. Good starting point for customization."
-                  path: "apps/node-red/minimal/config.json"
+                  path: "demo/node-red/minimal/config.json"
               default: "production"
               locked: false
             - label: "MQTT Broker Configuration"
@@ -83,11 +83,11 @@ apps:
                 production:
                   name: "Production MQTT Broker"
                   description: "Production MQTT broker connection settings with TLS and authentication"
-                  path: "apps/node-red/prod/mqtt.json"
+                  path: "demo/node-red/prod/mqtt.json"
                 testing:
                   name: "Test MQTT Broker"
                   description: "Test environment MQTT broker (no TLS)"
-                  path: "apps/node-red/test/mqtt.json"
+                  path: "demo/node-red/test/mqtt.json"
               default: "production"
               locked: true
             - label: "Security Policy"
@@ -97,7 +97,7 @@ apps:
                 corporate:
                   name: "Corporate Security Policy"
                   description: "Mandatory security policy enforced by corporate IT. Cannot be modified."
-                  path: "apps/node-red/security/corporate.json"
+                  path: "demo/node-red/security/corporate.json"
               locked: true
             - label: "SSL Certificate"
               device_path: "/data/certs/ssl.crt"
@@ -133,7 +133,7 @@ apps:
                 development:
                   name: "Development Config"
                   description: "Debug mode enabled with verbose logging"
-                  path: "apps/node-red/test/config.json"
+                  path: "demo/node-red/test/config.json"
           variables:
             - name: "DEBUG_MODE"
               label: "Enable Debug Mode"
@@ -152,7 +152,7 @@ apps:
         version_requirement: ">=3.1.15"
         deployment:
           compose:
-            path: "apps/node-red/docker-compose.yml"
+            path: "demo/node-red/docker-compose.yml"
         configuration:
           variables:
             - name: "NODE_ENV"
@@ -163,77 +163,4 @@ apps:
               default: "info"
             - name: "API_KEY"
               label: "API Key"
-
-  redis:
-    metadata:
-      name: "Redis"
-      description: "In-memory data structure store"
-      overview: "Redis is an open-source, in-memory data structure store, used as a database, cache, and message broker. It supports various data structures such as strings, hashes, lists, sets, sorted sets with range queries, bitmaps, hyperloglogs, geospatial indexes, and streams."
-      publisher: "Redis Ltd."
-      versions: ["7.2"]
-      category: "database"
-      icon: "https://picsum.photos/seed/redis/200/200"
-      tags: ["database", "cache", "key-value", "in-memory"]
-      screenshots:
-        - "https://picsum.photos/seed/redis1/800/600"
-      documentation: "https://redis.io/docs/"
-    variants:
-      - label: "Standalone"
-        deployment:
-          compose:
-            path: "apps/redis/standalone/docker-compose.yml"
-        configuration:
-          variables:
-            - name: "REDIS_PORT"
-              label: "Redis Port"
-              default: "6379"
-            - name: "REDIS_PASSWORD"
-              label: "Redis Password"
-            - name: "MAXMEMORY"
-              label: "Max Memory"
-              default: "256mb"
-      - label: "Persistent"
-        deployment:
-          compose:
-            path: "apps/redis/persistent/docker-compose.yml"
-        configuration:
-          variables:
-            - name: "REDIS_PORT"
-              label: "Redis Port"
-              default: "6379"
-            - name: "REDIS_PASSWORD"
-              label: "Redis Password"
-            - name: "MAXMEMORY"
-              label: "Max Memory"
-              default: "512mb"
-            - name: "PERSISTENCE_PATH"
-              label: "Persistence Path"
-              default: "/data/redis"
-
-  prometheus:
-    metadata:
-      name: "Prometheus"
-      description: "Monitoring and alerting toolkit"
-      overview: "Prometheus is an open-source systems monitoring and alerting toolkit originally built at SoundCloud. Prometheus collects and stores its metrics as time series data, i.e. metrics information is stored with the timestamp at which it was recorded, alongside optional key-value pairs called labels."
-      publisher: "Prometheus Authors"
-      versions: ["2.45.0", "2.46.0", "2.47.0"]
-      category: "monitoring"
-      icon: "https://picsum.photos/seed/prometheus/200/200"
-      tags: ["monitoring", "metrics", "alerting", "time-series"]
-      screenshots:
-        - "https://picsum.photos/seed/prometheus1/800/600"
-      documentation: "https://prometheus.io/docs/"
-    variants:
-      - label: "Production"
-        deployment:
-          compose:
-            path: "apps/prometheus/docker-compose.yml"
-        configuration:
-          variables:
-            - name: "PROMETHEUS_PORT"
-              label: "Prometheus Port"
-              default: "9090"
-            - name: "RETENTION_TIME"
-              label: "Data Retention Time"
-              default: "15d"
 

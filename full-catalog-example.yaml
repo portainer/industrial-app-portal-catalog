@@ -1,0 +1,446 @@
+metadata:
+  version: "1.0"
+  updated: "2025-11-12T00:00:00Z"
+
+defaults:
+  source:
+    git: "github.com/portainer/industrial-app-portal-catalog"
+    ref: "main"
+
+apps:
+  # node-red:
+  #   metadata:
+  #     name: "Node-RED"
+  #     description: "Low-code programming for event-driven applications"
+  #     overview: "Node-RED is a flow-based development tool for visual programming developed originally by IBM for wiring together hardware devices, APIs and online services as part of the Internet of Things. It provides a browser-based flow editor that makes it easy to wire together flows using the wide range of nodes in the palette."
+  #     publisher: "OpenJS Foundation"
+  #     versions: ["4.1.1"]
+  #     category: "industrial-automation"
+  #     icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/node-red.png"
+  #     tags: ["automation", "low-code", "iot", "mqtt"]
+  #     screenshots:
+  #       - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/node-red-1.jpeg"
+  #     documentation: "https://nodered.org/docs/"
+  #   variants:
+  #     - label: "Production"
+  #       deployment:
+  #         compose:
+  #           path: "edge/node-red/docker-compose.yml"
+  #       configuration:
+  #         variables:
+  #           - name: "TZ"
+  #             label: "Timezone"
+  #             default: "UTC"
+  #   requirements:
+  #     minMemory: "256MB"
+  #     architecture: ["amd64", "arm64"]
+
+  grafana:
+    metadata:
+      name: "Grafana"
+      description: "Analytics and interactive visualization platform"
+      overview: "Grafana is a multi-platform open source analytics and interactive visualization web application. It provides charts, graphs, and alerts for the web when connected to supported data sources. It is expandable through a plug-in system and is commonly used for visualizing time series data for infrastructure and application analytics."
+      publisher: "Grafana Labs"
+      versions: ["12.2.1"]
+      category: "visualization"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/grafana.png"
+      tags: ["visualization", "monitoring", "dashboards", "analytics"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/grafana-1.png"
+      documentation: "https://grafana.com/docs/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/grafana/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "grafana_admin"
+              label: "Admin Username"
+              default: "admin"
+            - name: "grafana_password"
+              label: "Admin Password"
+    requirements:
+      minMemory: "512MB"
+      architecture: ["amd64", "arm64"]
+
+  timescaledb:
+    metadata:
+      name: "TimescaleDB"
+      description: "PostgreSQL database optimized for time-series data"
+      overview: "TimescaleDB is an open-source time-series SQL database optimized for fast ingest and complex queries. It is engineered up from PostgreSQL and packaged as a PostgreSQL extension, providing automatic partitioning across time and space, while retaining the standard PostgreSQL interface."
+      publisher: "Timescale"
+      versions: ["2.23.1-pg17"]
+      category: "database"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/timescale-db.png"
+      tags: ["database", "time-series", "postgresql", "sql"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/timescale-db-1.png"
+      documentation: "https://docs.timescale.com/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/timescaledb/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "pgpassword"
+              label: "PostgreSQL Password"
+    requirements:
+      minMemory: "1GB"
+      architecture: ["amd64", "arm64"]
+
+  emqx:
+    metadata:
+      name: "EMQX"
+      description: "Scalable distributed MQTT broker for IoT"
+      overview: "EMQX is the world's most scalable and popular MQTT messaging broker. It supports 100M+ IoT devices connections per cluster, with 1M messages per second throughput and sub-millisecond latency. EMQX provides MQTT 5.0 and 3.x protocol support, along with WebSocket, CoAP, and LwM2M for device connectivity."
+      publisher: "EMQ Technologies"
+      versions: ["6.0.1"]
+      category: "messaging"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/emqx.png"
+      tags: ["mqtt", "broker", "messaging", "iot"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/emqx-1.png"
+      documentation: "https://www.emqx.io/docs/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/emqx/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "EMQX_DASHBOARD__DEFAULT_USERNAME"
+              label: "Dashboard Username"
+              default: "admin"
+            - name: "EMQX_DASHBOARD__DEFAULT_PASSWORD"
+              label: "Dashboard Password"
+    requirements:
+      minMemory: "512MB"
+      architecture: ["amd64", "arm64"]
+
+  cedalo-mosquitto:
+    metadata:
+      name: "Cedalo Mosquitto"
+      description: "Commercial MQTT broker"
+      overview: "Commercial-grade Eclipse Mosquitto MQTT broker. This enterprise version provides a professional, high-performance MQTT broker with advanced features for reliable messaging in industrial and IoT environments. Supports MQTT 5.0 and 3.x protocols with enhanced security and scalability."
+      publisher: "Cedalo"
+      versions: ["2.8"]
+      category: "messaging"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/cedalo-mosquitto.png"
+      tags: ["mqtt", "broker", "messaging"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/cedalo-mosquitto-mc-1.png"
+      documentation: "https://cedalo.com/docs/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/cedalo-mosquitto/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "CEDALO_LICENSE_KEY"
+              label: "License Key"
+            - name: "CEDALO_MOSQUITTO_PASSWORD"
+              label: "Mosquitto Password"
+    requirements:
+      minMemory: "256MB"
+      architecture: ["amd64"]
+
+  cedalo-mosquitto-mc:
+    metadata:
+      name: "Cedalo Mosquitto with Management Center"
+      description: "Commercial MQTT broker with web-based management"
+      overview: "Commercial-grade Eclipse Mosquitto MQTT broker with Cedalo Management Center. This enterprise version provides a professional MQTT broker with an intuitive web-based management interface for configuring brokers, monitoring connections, managing clients, and analyzing message flows in real-time."
+      publisher: "Cedalo"
+      versions: ["2.8"]
+      category: "messaging"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/cedalo-mosquitto.png"
+      tags: ["mqtt", "broker", "messaging", "management"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/cedalo-mosquitto-mc-1.png"
+      documentation: "https://cedalo.com/docs/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/cedalo-mosquitto-mc/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "CEDALO_LICENSE_KEY"
+              label: "License Key"
+            - name: "CEDALO_MOSQUITTO_PASSWORD"
+              label: "Mosquitto Password"
+            - name: "CEDALO_MC_USER"
+              label: "Management Center Username"
+              default: "cedalo"
+            - name: "CEDALO_MC_PASSWORD"
+              label: "Management Center Password"
+    requirements:
+      minMemory: "512MB"
+      architecture: ["amd64"]
+
+  opc-router:
+    metadata:
+      name: "OPC Router"
+      description: "No-code middleware for industrial applications"
+      overview: "OPC Router is a powerful middleware solution that enables seamless data exchange between industrial automation systems, databases, cloud platforms, and enterprise applications. With its no-code approach, you can create complex data flows and integrations through an intuitive graphical interface without programming knowledge."
+      publisher: "inray Industriesoftware GmbH"
+      versions: ["5.5"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/opc-router.png"
+      tags: ["opc", "middleware", "integration", "automation"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/opc-router-1.png"
+      documentation: "https://www.opc-router.com/documentation/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/opc-router/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "INITIAL_USERNAME"
+              label: "Initial Username"
+              default: "admin"
+            - name: "INITIAL_PASSWORD"
+              label: "Initial Password"
+            - name: "OR_I_ACCEPT_EULA"
+              label: "Accept EULA (Y/N)"
+              default: "N"
+    requirements:
+      minMemory: "1GB"
+      architecture: ["amd64"]
+
+  apachenifi:
+    metadata:
+      name: "Apache NiFi"
+      description: "Automated data flow and transformation platform"
+      overview: "Apache NiFi is an easy-to-use, powerful, and reliable system to process and distribute data. It supports powerful and scalable directed graphs of data routing, transformation, and system mediation logic. NiFi provides real-time control that makes it easy to manage the movement of data between any source and any destination."
+      publisher: "Apache Software Foundation"
+      versions: ["2.6.0"]
+      category: "data-processing"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/apache-nifi.png"
+      tags: ["data-flow", "etl", "integration", "automation"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/apache-nifi-1.png"
+      documentation: "https://nifi.apache.org/docs.html"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/apachenifi/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "nifiusername"
+              label: "Username"
+              default: "admin"
+            - name: "nifipassword"
+              label: "Password"
+    requirements:
+      minMemory: "2GB"
+      architecture: ["amd64", "arm64"]
+
+  ignition-gw:
+    metadata:
+      name: "Ignition Gateway"
+      description: "Industrial SCADA and MES platform"
+      overview: "Ignition is a powerful industrial application platform with fully integrated development tools for building SCADA, MES, and IIoT solutions. It provides unlimited tags, clients, and connections with a single server license. The platform features cross-platform compatibility, real-time data visualization, and extensive protocol support including OPC-UA."
+      publisher: "Inductive Automation"
+      versions: ["8.3.1"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/ignition-gateway.png"
+      tags: ["scada", "mes", "hmi", "automation"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/ignition-gateway-1.png"
+      documentation: "https://docs.inductiveautomation.com/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/ignition_gw/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "ACCEPT_IGNITION_EULA"
+              label: "Accept EULA (Y/N)"
+              default: "N"
+            - name: "GATEWAY_ADMIN_USERNAME"
+              label: "Gateway Admin Username"
+              default: "admin"
+            - name: "GATEWAY_ADMIN_PASSWORD"
+              label: "Gateway Admin Password"
+            - name: "IGNITION_EDITION"
+              label: "Edition (standard/edge)"
+              default: "edge"
+            - name: "TZ"
+              label: "Timezone"
+              default: "UTC"
+            - name: "EDGE_ID"
+              label: "Edge ID"
+    requirements:
+      minMemory: "1GB"
+      architecture: ["amd64", "arm64"]
+
+  litmus-edge:
+    metadata:
+      name: "Litmus Edge"
+      description: "Industrial edge platform for data collection"
+      overview: "Litmus Edge is an industrial edge computing platform that enables real-time data collection, normalization, and analysis from industrial equipment. It provides pre-built connectivity to thousands of industrial protocols and devices, with edge analytics, data transformation, and seamless cloud integration capabilities."
+      publisher: "Litmus Automation"
+      versions: ["latest"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/litmus-edge.png"
+      tags: ["edge-platform", "data-collection", "iot", "industrial"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/litmus-edge-1.png"
+      documentation: "https://www.litmus.io/documentation/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/litmus_edge/docker-compose.yml"
+    requirements:
+      minMemory: "1GB"
+      architecture: ["amd64", "arm64"]
+
+  anyviz:
+    metadata:
+      name: "Anyviz Cloud Adapter"
+      description: "Secure remote access for industrial devices"
+      overview: "Anyviz Cloud Adapter provides secure, bidirectional remote access to industrial devices and networks. It creates encrypted VPN tunnels for safe connectivity to PLCs, HMIs, and other industrial equipment without requiring public IP addresses or complex firewall configurations. Ideal for remote monitoring, maintenance, and support."
+      publisher: "Anyviz"
+      versions: ["2.1.2.0"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/anyviz.png"
+      tags: ["remote-access", "vpn", "connectivity", "security"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/anyviz-1.png"
+      documentation: "https://www.anyviz.io/documentation/"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/anyviz/docker-compose.yml"
+    requirements:
+      minMemory: "256MB"
+      architecture: ["amd64"]
+
+  softing-edgeconnector-modbus:
+    metadata:
+      name: "Softing edgeConnector Modbus"
+      description: "Modbus to OPC UA and MQTT gateway"
+      overview: "Softing edgeConnector Modbus enables seamless connectivity between Modbus TCP devices (sensors, PLCs) and modern industrial protocols. It aggregates Modbus data and exposes it via standardized OPC UA and MQTT interfaces, enabling integration with SCADA systems, cloud platforms, and analytics tools."
+      publisher: "Softing Industrial"
+      versions: ["v2025.03"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/softing.png"
+      tags: ["modbus", "opc-ua", "mqtt", "protocol-gateway"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/softing-edgeconnector-modbus-1.png"
+      documentation: "https://industrial.softing.com/products/edgeconnector.html"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/softing-edgeconnector-modbus/docker-compose.yml"
+    requirements:
+      minMemory: "256MB"
+      architecture: ["amd64", "arm64"]
+
+  softing-edgeconnector-siemens:
+    metadata:
+      name: "Softing edgeConnector Siemens"
+      description: "Siemens S7 to OPC UA and MQTT gateway"
+      overview: "Softing edgeConnector Siemens provides native connectivity to Siemens SIMATIC S7-300/400/1200/1500 PLCs. It reads data directly from Siemens controllers and publishes it via OPC UA and MQTT, enabling seamless integration with Industry 4.0 applications, cloud platforms, and data analytics systems."
+      publisher: "Softing Industrial"
+      versions: ["v2025.03"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/softing.png"
+      tags: ["siemens", "s7", "opc-ua", "mqtt", "protocol-gateway"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/softing-edgeconnector-s7-1.png"
+      documentation: "https://industrial.softing.com/products/edgeconnector.html"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/softing-edgeconnector-siemens/docker-compose.yml"
+    requirements:
+      minMemory: "256MB"
+      architecture: ["amd64", "arm64"]
+
+  softing-edgeconnector-840d:
+    metadata:
+      name: "Softing edgeConnector 840D"
+      description: "Siemens SINUMERIK to OPC UA and MQTT gateway"
+      overview: "Softing edgeConnector 840D specializes in connecting to Siemens SINUMERIK 840D sl/pl CNC controllers. It extracts machine and process data from CNC systems and makes it available via OPC UA and MQTT, enabling predictive maintenance, production monitoring, and integration with manufacturing execution systems."
+      publisher: "Softing Industrial"
+      versions: ["v2025.03"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/softing.png"
+      tags: ["sinumerik", "cnc", "opc-ua", "mqtt", "protocol-gateway"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/softing-edgeconnector-sinumerik-1.png"
+      documentation: "https://industrial.softing.com/products/edgeconnector.html"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/softing-edgeconnector-840d/docker-compose.yml"
+    requirements:
+      minMemory: "256MB"
+      architecture: ["amd64"]
+
+  softing-edgeconnector-fanuc-cnc:
+    metadata:
+      name: "Softing edgeConnector FANUC CNC"
+      description: "FANUC CNC to OPC UA and MQTT gateway"
+      overview: "Softing edgeConnector FANUC CNC connects to FANUC CNC controllers to collect machine and process data. It provides standardized access to CNC parameters, alarm states, and operational data via OPC UA and MQTT protocols, enabling real-time monitoring, analytics, and integration with IIoT platforms."
+      publisher: "Softing Industrial"
+      versions: ["v2025.03"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/softing.png"
+      tags: ["fanuc", "cnc", "opc-ua", "mqtt", "protocol-gateway"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/softing-edgeconnector-fanuccnc-1.png"
+      documentation: "https://industrial.softing.com/products/edgeconnector.html"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/softing-edgeconnector-fanuc-cnc/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "TZ"
+              label: "Timezone"
+              default: "UTC"
+    requirements:
+      minMemory: "256MB"
+      architecture: ["amd64", "arm64"]
+
+  softing-edgeconnector-aggregator:
+    metadata:
+      name: "Softing edgeConnector Aggregator"
+      description: "OPC UA data aggregation service"
+      overview: "Softing edgeConnector Aggregator provides a powerful OPC UA aggregation service that consolidates data from multiple OPC UA sources into a single unified interface. It aggregates, filters, and republishes data via OPC UA and MQTT, simplifying complex industrial network architectures and reducing system integration complexity."
+      publisher: "Softing Industrial"
+      versions: ["v2025.03"]
+      category: "industrial-automation"
+      icon: "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/logos/softing.png"
+      tags: ["opc-ua", "mqtt", "aggregation", "protocol-gateway"]
+      screenshots:
+        - "https://portainer-io-assets.sfo2.cdn.digitaloceanspaces.com/industrial-app-portal/screenshots/softing-edgeaggregator-1.png"
+      documentation: "https://industrial.softing.com/products/edgeconnector.html"
+    variants:
+      - label: "Production"
+        deployment:
+          compose:
+            path: "edge/softing-edgeconnector-aggregator/docker-compose.yml"
+        configuration:
+          variables:
+            - name: "TZ"
+              label: "Timezone"
+              default: "UTC"
+    requirements:
+      minMemory: "512MB"
+      architecture: ["amd64", "arm64"]
