@@ -8,24 +8,18 @@ connectivity:
     s7_connections:
       s7_72:
         # The s7_72 section contains only configuration parameters for Siemens S7-1200/1500 series PLC connections
-        - name: "((PIAP_S7_CONNECTION_NAME))" # MANDATORY
-          address: "((PIAP_S7_CONNECTION_ADDRESS))" # MANDATORY
-          port: 102
+        - name: "((PIAP_S7_CONNECTION_NAME))"          address: "((PIAP_S7_CONNECTION_ADDRESS))"          port: 102
           enabled: true
 
   modbus:
     # The modbus section contains only parameters for Modbus TCP connections
-    - name: "((PIAP_MODBUS_CONNECTION_NAME))" # MANDATORY
-      address: "((PIAP_MODBUS_CONNECTION_ADDRESS))" # MANDATORY
-      port: 502
+    - name: "((PIAP_MODBUS_CONNECTION_NAME))"      address: "((PIAP_MODBUS_CONNECTION_ADDRESS))"      port: 502
       enabled: true
 
 core:
   authentication:
     users:
-      - name: "((PIAP_AUTH_USERNAME))" # MANDATORY
-        description: "((PIAP_AUTH_USER_DESCRIPTION))" # MANDATORY
-        first_name: "John"
+      - name: "((PIAP_AUTH_USERNAME))"        description: "((PIAP_AUTH_USER_DESCRIPTION))"        first_name: "John"
         last_name: "Doe"
         organization: "placeholder_organization"
         email: "john.doe@ph_organization.com"
