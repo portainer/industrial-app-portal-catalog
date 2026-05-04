@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   nginx:
-    image: nginx:((PIAP_IMAGE_VERSION))
+    image: "nginx:((PIAP_IMAGE_VERSION))"
     container_name: nginx
     restart: unless-stopped
     ports:

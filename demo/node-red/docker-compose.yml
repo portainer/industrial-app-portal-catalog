@@ -3,7 +3,7 @@ version: "3.8"
 services:
   nodered:
     # PIAP replaces ((PIAP_IMAGE_VERSION)) with user-selected version before deployment
-    image: nodered/node-red:((PIAP_IMAGE_VERSION))
+    image: "nodered/node-red:((PIAP_IMAGE_VERSION))"
     container_name: nodered
     restart: unless-stopped
     ports:

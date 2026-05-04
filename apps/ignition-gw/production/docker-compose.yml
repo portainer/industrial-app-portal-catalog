@@ -1,6 +1,6 @@
 services:
   ignition-gw:
-    image: inductiveautomation/ignition:((PIAP_IMAGE_VERSION))
+    image: "inductiveautomation/ignition:((PIAP_IMAGE_VERSION))"
     ports:
       - "8088:8088"
       - "8043:8043"
@@ -9,10 +9,10 @@ services:
       - ignition-gw-data:/usr/local/bin/ignition/data
     environment:
       - ACCEPT_IGNITION_EULA=Y
-      - GATEWAY_ADMIN_USERNAME=((PIAP_ADMIN_USER))
-      - GATEWAY_ADMIN_PASSWORD=((PIAP_ADMIN_PASSWORD))
+      - "GATEWAY_ADMIN_USERNAME=((PIAP_ADMIN_USER))"
+      - "GATEWAY_ADMIN_PASSWORD=((PIAP_ADMIN_PASSWORD))"
       - IGNITION_EDITION=STANDARD
-      - TZ=((PIAP_TZ))
+      - "TZ=((PIAP_TZ))"
     command: >
       -n ${EDGE_ID}
       -m 1024

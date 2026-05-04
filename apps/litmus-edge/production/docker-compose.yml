@@ -1,6 +1,6 @@
 services:
   litmus-edge:
-    image: litmusedge.azurecr.io/litmusedge-std-docker:((PIAP_IMAGE_VERSION))
+    image: "litmusedge.azurecr.io/litmusedge-std-docker:((PIAP_IMAGE_VERSION))"
     ports:
       - "8443:443"
     cap_add:

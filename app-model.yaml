@@ -276,12 +276,13 @@ apps:
           # SPECIAL PLACEHOLDER - ((PIAP_IMAGE_VERSION)):
           #   - Automatically available without defining a variable
           #   - Replaced with the user-selected version from metadata.versions
-          #   - Commonly used in image tags: image: nodered/node-red:((PIAP_IMAGE_VERSION))
+          #   - Commonly used in image tags: image: "nodered/node-red:((PIAP_IMAGE_VERSION))"
+          #   - NOTE: every ((PIAP_*)) placeholder MUST be in a quoted YAML scalar (see CLAUDE.md "Placeholder Quoting Rule")
           #
           # USER-DEFINED PLACEHOLDERS in Compose files:
           #   - Any ((PIAP_VARIABLE_NAME)) placeholder in the Compose file is interpolated
           #   - The value comes from the matching variable in configuration.variables
-          #   - Example: environment: - API_URL=((PIAP_API_URL))
+          #   - Example: environment: - "API_URL=((PIAP_API_URL))" (always quote the placeholder position)
           #
           # ----------------------------------------------------------------------------
           # 2. CONFIGURATION TEMPLATE INTERPOLATION

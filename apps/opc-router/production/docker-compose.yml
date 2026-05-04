@@ -1,6 +1,6 @@
 services:
   opc-router:
-    image: opcrouter/runtime:((PIAP_IMAGE_VERSION))
+    image: "opcrouter/runtime:((PIAP_IMAGE_VERSION))"
     ports:
       - "49420:49420"
       - "8080:8080"

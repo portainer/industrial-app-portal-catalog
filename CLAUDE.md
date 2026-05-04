@@ -61,7 +61,7 @@ The system uses `((PIAP_*))` placeholders for dynamic value injection:
 
 Example in docker-compose.yml:
 ```yaml
-image: nodered/node-red:((PIAP_IMAGE_VERSION))
+image: "nodered/node-red:((PIAP_IMAGE_VERSION))"
 ```
 
 Example in config template (apps/node-red/prod/mqtt.json):
@@ -73,6 +73,41 @@ Example in config template (apps/node-red/prod/mqtt.json):
   }
 }
 ```
+
+### Placeholder Quoting Rule (Compose Templates)
+
+**Every `((PIAP_*))` placeholder in a docker-compose.yml template MUST sit inside a quoted YAML scalar.** Single quotes (`'…'`) and double quotes (`"…"`) are both fine — pick whichever is more idiomatic for the field.
+
+**Why:** When PIAP renders a compose template, each `((PIAP_VAR))` token is replaced with the user-supplied value. If the placeholder is in a plain (unquoted) scalar position, certain values — for example a string starting with `&`, `*`, `>`, `|`, `!`, `:`, or `,` — get parsed by Docker's YAML loader as YAML structural tokens (anchors, aliases, block scalars) instead of literal strings. Quoting the position forces the value to be interpreted as a string regardless of its leading character, so users can safely supply any printable string (hostnames with leading `:`, paths with `*` wildcards, regexes, etc.).
+
+This is the catalog-side complement to IAP's API-boundary input validation introduced for security finding F016 (which already rejects newlines and other control characters in user-supplied values). The two layers together close the template-injection class.
+
+Required (every `((PIAP_*))` quoted at the position):
+```yaml
+services:
+  app:
+    image: "myapp:((PIAP_IMAGE_VERSION))"
+    environment:
+      DB_HOST: "((PIAP_DB_HOST))"
+    command: "((PIAP_CMD))"
+    ports:
+      - "((PIAP_PORT)):8080"
+```
+
+Forbidden (placeholder in unquoted plain-scalar position):
+```yaml
+services:
+  app:
+    image: myapp:((PIAP_IMAGE_VERSION))   # WRONG - unquoted
+    environment:
+      DB_HOST: ((PIAP_DB_HOST))           # WRONG - unquoted
+    command: ((PIAP_CMD))                 # WRONG - unquoted
+```
+
+Notes:
+- The rule applies to **compose templates** (and any other YAML template that contains `((PIAP_*))` placeholders, e.g. the Softing offline-config). Config templates in non-YAML formats (JSON, properties, INI) follow that format's own quoting rules.
+- Block-scalar style (`|` or `>`) is **not** a substitute for quoting — those headers are themselves YAML structural and must not appear in placeholder positions.
+- This rule is currently a convention enforced by code review only. IAP may add an automated lint at template-load time in the future. Catch it in PR review when accepting catalog template contributions.
 
 ### Git Source Inheritance
 
@@ -208,6 +243,7 @@ When modifying YAML files, ensure:
 - Empty `templates: {}` is treated same as omitted (no validation error, but omitting is preferred)
 - Variable names in `configuration.variables` match placeholders in template files (with `PIAP_` prefix)
 - All git references use format: `github.com/org/repo` (no https://)
+- Every `((PIAP_*))` placeholder in compose templates (and any YAML config template) sits inside a quoted scalar — see "Placeholder Quoting Rule" above
 
 ## Common Tasks
 

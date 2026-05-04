@@ -42,6 +42,8 @@ Present the extracted information to the user as a starting point: "I found the 
 
 When creating the compose file for the catalog, replace the image tag with `((PIAP_IMAGE_VERSION))` and replace any environment variable values that should be user-configurable with `((PIAP_VARIABLE_NAME))` placeholders.
 
+**Placeholder quoting rule (mandatory):** Every `((PIAP_*))` placeholder in a compose template MUST sit inside a quoted YAML scalar (single or double quotes). This is the catalog-side complement to IAP's input validation (security finding F016) — it forces the substituted value to be parsed as a string regardless of leading character (`&`, `*`, `>`, `|`, `!`, `:`, `,` would otherwise be interpreted as YAML structural tokens). When you write or modify a compose template, audit every placeholder position and quote it. Block-scalar style (`|`, `>`) is not a substitute. See the "Placeholder Quoting Rule" section in CLAUDE.md for the canonical specification.
+
 ## Interactive Interview Flow
 
 Use the `AskUserQuestion` tool at each step to collect information. Present sensible defaults based on existing catalog patterns and any compose file analysis. Don't ask everything at once — guide the user through logical stages.
@@ -182,22 +184,22 @@ Follow these conventions from existing apps:
 - **Directory structure**: `apps/{app-id}/{variant-label-lowercased}/docker-compose.yml`
 - **Single service per file** — no multi-container orchestration
 - **Service name**: lowercase kebab-case, typically matching or derived from app-id
-- **Image tag**: Always use `((PIAP_IMAGE_VERSION))` placeholder
-- **Environment variables**: Use `((PIAP_VARIABLE_NAME))` for user-configurable values
+- **Image tag**: Always use `((PIAP_IMAGE_VERSION))` placeholder, **quoted**: `image: "publisher/app:((PIAP_IMAGE_VERSION))"`
+- **Environment variables**: Use `((PIAP_VARIABLE_NAME))` for user-configurable values, **quoted at every placeholder position** (mapping-style `KEY: "((PIAP_X))"` or list-style `- "KEY=((PIAP_X))"`)
 - **Volumes**: Use named volumes (no bind mounts). Naming is flexible — existing apps use a mix of styles (`mc_data`, `config`, `mqtt-config`, `{app-id}-data`); pick something descriptive.
 - **Start with `services:`** — no `version:` key
 
-Example:
+Example (note every `((PIAP_*))` position is inside quotes):
 ```yaml
 services:
   my-app:
-    image: publisher/app:((PIAP_IMAGE_VERSION))
+    image: "publisher/app:((PIAP_IMAGE_VERSION))"
     ports:
       - "8080:8080"
     environment:
-      ADMIN_USER: ((PIAP_ADMIN_USER))
-      ADMIN_PASSWORD: ((PIAP_ADMIN_PASSWORD))
-      TZ: ((PIAP_TZ))
+      ADMIN_USER: "((PIAP_ADMIN_USER))"
+      ADMIN_PASSWORD: "((PIAP_ADMIN_PASSWORD))"
+      TZ: "((PIAP_TZ))"
     volumes:
       - my-app-data:/data
     restart: always
@@ -227,6 +229,7 @@ Before finalizing, verify:
 - [ ] Variable names in config match `((PIAP_*))` placeholders in template files
 - [ ] Git references use format `github.com/org/repo` (no `https://`)
 - [ ] Compose file uses `((PIAP_IMAGE_VERSION))` for the image tag
+- [ ] Every `((PIAP_*))` placeholder in compose templates (and any YAML config templates) is inside a quoted scalar — no plain/unquoted positions, no block-scalar `|`/`>` substitutions
 - [ ] Variant directory name matches the variant label, lowercased
 - [ ] The `metadata.updated` timestamp in `catalog.yaml` is updated to today's date in ISO 8601 UTC format (e.g., `"2026-05-03T00:00:00Z"`) — even when the new entry is in a standalone file
 
